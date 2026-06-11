@@ -28,21 +28,25 @@ module.exports = async function handler(req, res) {
 
     const packNum = parseInt(body.pack, 10);
     const color   = body.color || 'Blanco';
+    const ttclid  = body.ttclid || '';
 
     if (!PACK_AMOUNTS[packNum]) {
       return res.status(400).json({ error: 'Pack inválido' });
     }
 
+    const meta = {
+      pack: packNum.toString(),
+      pack_name: PACK_NAMES[packNum],
+      color,
+      product: 'Ventilador de Techo Silencioso LED 60W y Aspas Plegables'
+    };
+    if (ttclid) meta.ttclid = ttclid;
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: PACK_AMOUNTS[packNum],
       currency: 'eur',
       automatic_payment_methods: { enabled: true },
-      metadata: {
-        pack: packNum.toString(),
-        pack_name: PACK_NAMES[packNum],
-        color,
-        product: 'Ventilador de Techo Silencioso LED 60W y Aspas Plegables'
-      }
+      metadata: meta
     });
 
     // Set description using the actual PI ID so each order has a unique traceable code

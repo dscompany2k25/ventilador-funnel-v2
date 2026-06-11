@@ -90,6 +90,7 @@ async function sendTikTokPurchase(pi) {
   const qty = packQty[packNum] || 1;
   const value = (pi.amount / 100);
 
+  const ttclid = (pi.metadata || {}).ttclid;
   const user = {};
   if (pi.receipt_email)  user.email        = sha256(pi.receipt_email);
   if (shipping.phone)    user.phone_number  = sha256(shipping.phone.replace(/\D/g,''));
@@ -98,6 +99,7 @@ async function sendTikTokPurchase(pi) {
   if (addr.city)         user.city          = sha256(addr.city.toLowerCase());
   if (addr.postal_code)  user.zip_code      = sha256(addr.postal_code);
   if (addr.country)      user.country       = sha256(addr.country.toLowerCase());
+  if (ttclid)            user.ttclid        = ttclid;
 
   const payload = {
     pixel_code:       pixelId,
@@ -119,7 +121,7 @@ async function sendTikTokPurchase(pi) {
           quantity:     qty
         }]
       },
-      page: { url: 'https://ventilador-funnel-v2.vercel.app' }
+      page: { url: 'https://www.shopiluminaes.online' }
     }]
   };
 
