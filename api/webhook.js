@@ -91,13 +91,13 @@ async function sendTikTokPurchase(pi) {
   const value = (pi.amount / 100);
 
   const user = {};
-  if (pi.receipt_email)  user.email        = [sha256(pi.receipt_email)];
-  if (shipping.phone)    user.phone_number  = [sha256(shipping.phone.replace(/\D/g,''))];
-  if (fn)                user.first_name    = [sha256(fn)];
-  if (ln)                user.last_name     = [sha256(ln)];
-  if (addr.city)         user.city          = [sha256(addr.city.toLowerCase())];
-  if (addr.postal_code)  user.zip_code      = [sha256(addr.postal_code)];
-  if (addr.country)      user.country       = [sha256(addr.country.toLowerCase())];
+  if (pi.receipt_email)  user.email        = sha256(pi.receipt_email);
+  if (shipping.phone)    user.phone_number  = sha256(shipping.phone.replace(/\D/g,''));
+  if (fn)                user.first_name    = sha256(fn);
+  if (ln)                user.last_name     = sha256(ln);
+  if (addr.city)         user.city          = sha256(addr.city.toLowerCase());
+  if (addr.postal_code)  user.zip_code      = sha256(addr.postal_code);
+  if (addr.country)      user.country       = sha256(addr.country.toLowerCase());
 
   const payload = {
     pixel_code:       pixelId,
