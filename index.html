@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Meta Pixel -->
   <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1535416804668044');fbq('track','PageView');</script>
+  <!-- TikTok Pixel -->
+  <script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookieConsent","disableCookieConsent","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._d=ttq._d||{},ttq._d[e]=n||{};var s=d.createElement("script");s.type="text/javascript",s.async=!0,s.src=r+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(s,a)};ttq.load("D8GAHK3C77UFK9KDV3O0");ttq.page();}(window,document,"ttq");</script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1535416804668044&ev=PageView&noscript=1"/></noscript>
   <!-- End Meta Pixel -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -4565,6 +4567,7 @@ function _setPayBtn(txt,disabled){
 }
 /* Meta Pixel helper — silent fail if fbq not loaded */
 function _fbTrack(event,data,opts){try{if(typeof fbq==='function')fbq('track',event,data||{},opts||{});}catch(e){}}
+function _ttTrack(event,data,opts){try{if(typeof ttq!=='undefined')ttq.track(event,data||{},opts||{});}catch(e){}}
 
 window._ppPayMethod=''; var _bizumTimer=null; var _bizumObserver=null;
 
@@ -4634,6 +4637,7 @@ function ppOpenCart(){
   var c=document.getElementById('ppMyCart');if(c){c.style.display='flex';c.setAttribute('aria-hidden','false');}
   document.body.style.overflow='hidden';
   _fbTrack('AddToCart',{content_ids:['ventilador-techo-led-60w'],content_type:'product',content_name:'Ventilador de Techo LED 60W',currency:'EUR',value:PACK_AMOUNTS[p]/100,num_items:PACK_QTY[p]||1});
+  _ttTrack('AddToCart',{contents:[{content_id:'ventilador-techo-led-60w',content_type:'product',content_name:'Ventilador de Techo LED 60W',price:PACK_AMOUNTS[p]/100,quantity:PACK_QTY[p]||1}],currency:'EUR',value:PACK_AMOUNTS[p]/100});
 }
 function ppCloseCart(){var c=document.getElementById('ppMyCart');if(c){c.style.display='none';c.setAttribute('aria-hidden','true');}document.body.style.overflow='';}
 
@@ -4648,6 +4652,7 @@ function ppGoToCheckout(){
   if(ck){ck.style.display='block';ck.setAttribute('aria-hidden','false');ck.scrollTop=0;}
   document.body.style.overflow='hidden';
   _fbTrack('InitiateCheckout',{content_ids:['ventilador-techo-led-60w'],content_type:'product',content_name:'Ventilador de Techo LED 60W',currency:'EUR',value:PACK_AMOUNTS[p]/100,num_items:PACK_QTY[p]||1});
+  _ttTrack('InitiateCheckout',{contents:[{content_id:'ventilador-techo-led-60w',content_type:'product',content_name:'Ventilador de Techo LED 60W',price:PACK_AMOUNTS[p]/100,quantity:PACK_QTY[p]||1}],currency:'EUR',value:PACK_AMOUNTS[p]/100});
   _mountStripeDeferred(p);
 }
 
@@ -4710,6 +4715,7 @@ async function ppConfirmPayment(){
     if(result.error){_setErr(result.error.message||'Error al procesar el pago.');_setPayBtn('',false);}
     else if(result.paymentIntent&&result.paymentIntent.status==='succeeded'){
       _fbTrack('Purchase',{value:PACK_AMOUNTS[p]/100,currency:'EUR',content_ids:['ventilador-techo-led-60w'],content_type:'product',content_name:'Ventilador de Techo LED 60W',num_items:PACK_QTY[p]||1,order_id:piId},{eventID:piId});
+      _ttTrack('PlaceAnOrder',{contents:[{content_id:'ventilador-techo-led-60w',content_type:'product',content_name:'Ventilador de Techo LED 60W',price:PACK_AMOUNTS[p]/100,quantity:PACK_QTY[p]||1}],currency:'EUR',value:PACK_AMOUNTS[p]/100,order_id:piId},{event_id:piId});
       document.getElementById('ppStep2').style.display='none';
       document.getElementById('ppStep3').style.display='block';
       document.getElementById('ppCheckoutPage').scrollTop=0;
@@ -4740,7 +4746,7 @@ function closeCartAndReset(){
 
 /* ViewContent on page load */
 (function(){
-  var vc=function(){_fbTrack('ViewContent',{content_ids:['ventilador-techo-led-60w'],content_type:'product',content_name:'Ventilador de Techo Silencioso LED 60W',currency:'EUR',value:49.00});};
+  var vc=function(){_fbTrack('ViewContent',{content_ids:['ventilador-techo-led-60w'],content_type:'product',content_name:'Ventilador de Techo Silencioso LED 60W',currency:'EUR',value:49.00});_ttTrack('ViewContent',{contents:[{content_id:'ventilador-techo-led-60w',content_type:'product',content_name:'Ventilador de Techo Silencioso LED 60W',price:49.00}],currency:'EUR',value:49.00});};
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',vc);}else{vc();}
 })();
 

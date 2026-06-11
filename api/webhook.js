@@ -76,6 +76,66 @@ async function sendMetaPurchase(pi) {
   }
 }
 
+/* ── TikTok Events API PlaceAnOrder event ── */
+async function sendTikTokPurchase(pi) {
+  const token = process.env.TIKTOK_ACCESS_TOKEN;
+  const pixelId = 'D8GAHK3C77UFK9KDV3O0';
+  if (!token) return;
+
+  const shipping = pi.shipping || {};
+  const addr = shipping.address || {};
+  const { fn, ln } = splitName(shipping.name);
+  const packNum = parseInt((pi.metadata || {}).pack, 10) || 2;
+  const packQty = { 1: 1, 2: 2, 3: 3 };
+  const qty = packQty[packNum] || 1;
+  const value = (pi.amount / 100);
+
+  const user = {};
+  if (pi.receipt_email)  user.email        = [sha256(pi.receipt_email)];
+  if (shipping.phone)    user.phone_number  = [sha256(shipping.phone.replace(/\D/g,''))];
+  if (fn)                user.first_name    = [sha256(fn)];
+  if (ln)                user.last_name     = [sha256(ln)];
+  if (addr.city)         user.city          = [sha256(addr.city.toLowerCase())];
+  if (addr.postal_code)  user.zip_code      = [sha256(addr.postal_code)];
+  if (addr.country)      user.country       = [sha256(addr.country.toLowerCase())];
+
+  const payload = {
+    pixel_code:       pixelId,
+    event_source:     'web',
+    event_source_id:  pixelId,
+    data: [{
+      event:      'PlaceAnOrder',
+      event_time: Math.floor(Date.now() / 1000),
+      event_id:   pi.id,
+      user,
+      properties: {
+        currency: 'EUR',
+        value,
+        contents: [{
+          content_id:   'ventilador-techo-led-60w',
+          content_type: 'product',
+          content_name: 'Ventilador de Techo LED 60W',
+          price:        value,
+          quantity:     qty
+        }]
+      },
+      page: { url: 'https://ventilador-funnel-v2.vercel.app' }
+    }]
+  };
+
+  try {
+    const res = await fetch(
+      'https://business-api.tiktok.com/open_api/v1.3/event/track/',
+      { method: 'POST', headers: { 'Access-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
+    );
+    const json = await res.json();
+    if (!res.ok) console.error('TikTok Events API error:', JSON.stringify(json));
+    else console.log('TikTok Events API PlaceAnOrder sent:', json.message);
+  } catch (err) {
+    console.error('TikTok Events API fetch error:', err.message);
+  }
+}
+
 /* ── Main webhook handler ── */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -111,6 +171,8 @@ module.exports = async function handler(req, res) {
 
     // Meta Conversions API — server-side Purchase (deduplicated via event_id = pi.id)
     await sendMetaPurchase(pi);
+    // TikTok Events API — server-side PlaceAnOrder (deduplicated via event_id = pi.id)
+    await sendTikTokPurchase(pi);
   }
 
   if (event.type === 'payment_intent.payment_failed') {
