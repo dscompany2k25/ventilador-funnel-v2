@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/create-payment-intent.js": { "maxDuration": 10 },
+    "api/webhook.js": { "maxDuration": 10 }
+  }
+}
